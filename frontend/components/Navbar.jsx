@@ -26,7 +26,7 @@ function Navbar() {
           </ul>
           <Link
             href={"/booking"}
-            className="text-xl font-light border-2 border-gray-500 bg-cyan-700 text-white  rounded-full p-4 hover:opacity-20"
+            className="text-xl font-light border-2 border-gray-500 bg-cyan-700 transition duration-300 text-white  rounded-full p-4 hover:bg-cyan-500"
           >
             Book an Appointment
           </Link>

@@ -9,7 +9,7 @@ function Landing() {
             Healing <span className="text-cyan-700"> Hands</span> <br />
             Caring <span className="text-cyan-700">Hearts</span>
           </h1>
-          <p className="my-8 text-3xl font-medium text-justify leading-10 mr-20 ">
+          <p className="my-8 text-3xl font-medium tracking-wide  leading-10 mr-20 ">
             Your journey to better health starts here. <br />
             Schedule a consultation with Dr.Aknouche, a trusted expert dedicated
             to providing compassionate and personalized care.
@@ -17,11 +17,11 @@ function Landing() {
           <div className=" flex gap-5">
             <Link
               href="/booking"
-              className=" font-light rounded-full text-xl p-4 border-2 hover:bg-white hover:text-black border-gray-500 text-white bg-cyan-700  "
+              className=" font-light rounded-full text-xl p-4 border-2 hover:bg-cyan-500 transition duration-300  border-gray-500 text-white bg-cyan-700  "
             >
               Book an Appointment
             </Link>
-            <button className="rounded-full font-light text-xl  hover:bg-cyan-700 hover:text-white p-4 border-2 border-cyan-950 ">
+            <button className="rounded-full font-light text-xl hover:bg-cyan-500 transition duration-300 hover:text-white p-4 border-2 border-cyan-950 ">
               Contact Us
             </button>
           </div>
