@@ -1,67 +1,122 @@
 "use client";
-import * as React from "react";
-import Box from "@mui/material/Box";
-import { DataGrid } from "@mui/x-data-grid";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import { useRouter } from "next/navigation";
 
-const columns = [
-  {
-    field: "firstName",
-    headerName: "First name",
-    width: 150,
-    editable: true,
-  },
-  {
-    field: "lastName",
-    headerName: "Last name",
-    width: 150,
-    editable: true,
-  },
-  {
-    field: "birthDate",
-    headerName: "BirthDate",
-    type: "date",
-    width: 160,
-    editable: true,
-  },
-  { field: "phoneNumber", headerName: "Phone-Number", width: 200 },
-  {
-    field: "appointment",
-    headerName: "Appointment",
-    description: "This column has a value getter and is not sortable.",
-    sortable: false,
-    width: 200,
-  },
-];
+function Dashboard() {
+  // States to hold data
+  const [patients, setPatients] = useState([]);
+  const [appointments, setAppointments] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const router = useRouter();
 
-const rows = [
-  { id: 1, lastName: "Snow", firstName: "Jon", age: 14 },
-  { id: 2, lastName: "Lannister", firstName: "Cersei", age: 31 },
-  { id: 3, lastName: "Lannister", firstName: "Jaime", age: 31 },
-  { id: 4, lastName: "Stark", firstName: "Arya", age: 11 },
-  { id: 5, lastName: "Targaryen", firstName: "Daenerys", age: null },
-  { id: 6, lastName: "Melisandre", firstName: null, age: 50 },
-  { id: 7, lastName: "Clifford", firstName: "Ferrara", age: 44 },
-  { id: 8, lastName: "Frances", firstName: "Rossini", age: 36 },
-  { id: 9, lastName: "Roxie", firstName: "Harvey", age: 65 },
-];
+  // Fetch data from backend
+  const fetchData = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await axios.get("http://localhost:3002/dashboard", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
-export default function DataGridDemo() {
+      setPatients(response.data.patients);
+      setAppointments(response.data.appointments);
+
+      setLoading(false);
+    } catch (error) {
+      console.error("Error fetching data", error);
+      setLoading(false);
+      router.push("/login");
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
   return (
-    <Box sx={{ height: 400, width: "100%", margin: 20 }}>
-      <DataGrid
-        rows={rows}
-        columns={columns}
-        initialState={{
-          pagination: {
-            paginationModel: {
-              pageSize: 5,
-            },
-          },
-        }}
-        pageSizeOptions={[5]}
-        checkboxSelection
-        disableRowSelectionOnClick
-      />
-    </Box>
+    <div className="min-h-screen bg-gray-100">
+      <div className="max-w-7xl mx-auto p-6">
+        {/* Header */}
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-3xl font-semibold">Dashboard</h2>
+          <div className="flex items-center space-x-4">
+            <div className="relative">
+              <input
+                type="text"
+                placeholder="Search..."
+                className="bg-white text-gray-700 py-2 px-4 rounded-md border border-gray-300"
+              />
+            </div>
+            <button
+              className="bg-cyan-500 hover:bg-cyan-700 text-white py-2 px-4 rounded-md"
+              onClick={() => {
+                localStorage.removeItem("token");
+                router.push("/login");
+              }}
+            >
+              Log Out
+            </button>
+          </div>
+        </div>
+
+        {loading ? (
+          <p>Loading...</p>
+        ) : (
+          <div className="grid grid-cols-3 gap-6 mb-6">
+            <div className="bg-white p-6 rounded-lg shadow-lg">
+              <h3 className="text-lg font-semibold text-gray-700">
+                Total Patients
+              </h3>
+              <p className="text-2xl font-bold text-cyan-900">
+                {patients.length}
+              </p>
+            </div>
+            <div className="bg-white p-6 rounded-lg shadow-lg">
+              <h3 className="text-lg font-semibold text-gray-700">
+                Upcoming Appointments
+              </h3>
+              <p className="text-2xl font-bold text-cyan-900">
+                {appointments.length}
+              </p>
+            </div>
+            <div className="bg-white p-6 rounded-lg shadow-lg">
+              <h3 className="text-lg font-semibold text-gray-700">
+                Recent Reports
+              </h3>
+              <p className="text-2xl font-bold text-cyan-900">102</p>
+            </div>
+          </div>
+        )}
+
+        <div className="bg-white p-6 rounded-lg shadow-lg">
+          <h3 className="text-xl font-semibold text-gray-700 mb-4">
+            Recent Appointments
+          </h3>
+          <table className="w-full table-auto">
+            <thead className="text-left bg-gray-100">
+              <tr>
+                <th className="py-2 px-4">Patient Name</th>
+                <th className="py-2 px-4">Date</th>
+                <th className="py-2 px-4">Doctor</th>
+                <th className="py-2 px-4">Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {appointments.map((appointment) => (
+                <tr key={appointment.id}>
+                  <td className="py-2 px-4">{appointment.patientName}</td>
+                  <td className="py-2 px-4">{appointment.date}</td>
+                  <td className="py-2 px-4">{appointment.doctor}</td>
+                  <td className="py-2 px-4">{appointment.status}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
   );
 }
+
+export default Dashboard;
